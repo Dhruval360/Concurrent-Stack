@@ -1,5 +1,5 @@
 # Concurrent-Stack
-This is a concurrent implementation of the data structure STACK using pthreads in c++.
+This is a concurrent implementation of the data structure STACK using pthreads in C++.
 
 # Objective:
 * To implement a parallel stack wherein multiple threads will be performing different actions on the same stack.
