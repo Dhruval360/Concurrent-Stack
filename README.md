@@ -30,4 +30,5 @@ This program takes command line arguments which is of the following format:
 * p means print (display the stack from top to bottom)
 
 Sample input for LINUX: **./a.out i4 i6 i7 s d d d s p i89 d s p**
+
 Which means **Insert 4, Insert 6, Insert 7, Search, Delete, Delete, Delete, Search, Print, Insert 89, Delete, Search, Print** to the program.
