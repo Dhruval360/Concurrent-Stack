@@ -12,13 +12,14 @@ This is a concurrent implementation of the data structure STACK using pthreads i
 * Print (Display the stack from top to bottom).
 
 # Implementation:
-I have implemented a class called STACK with all the operations mentioned above.
+I have implemented a class called **STACK** with all the operations mentioned above.
 The stack itself is a vector which is a private member of the class. The class also has another private member named top, which is an integer that holds the index of the topmost element.
 I have made use of mutexes for synchronization and hence only one thread can access the stack at a time (to prevent the bugs mentioned in the objective).
 
 # Files:
 * stack_using_vectors.cpp : It is the main file which has the implementation.
-* Thread.txt : This file will get updated with the logs of creation and joining of threads when the main program is run.
+* Thread_logs.txt : This file will get updated with the logs of creation and joining of threads when the main program is run. (Disabled by default. Please uncomment the required lines to enable logging)
+* input.txt : This file contains a sample input to the program which can be redirected as command line arguments as discussed below.
 
 # Compilation and running:
 Type **g++ concurrent_stack.cpp -pthread** in the terminal to compile the program to give an executable named **a.out**.
@@ -32,3 +33,5 @@ This program takes command line arguments which is of the following format:
 Sample input for LINUX: **./a.out i4 i6 i7 s d d d s p i89 d s p**
 
 Which means **Insert 4, Insert 6, Insert 7, Search, Delete, Delete, Delete, Search, Print, Insert 89, Delete, Search, Print** to the program.
+
+The same input can be given from a text file like input.txt by using **./a.out $(cat input.txt)**
