@@ -1,0 +1,30 @@
+In main: creating thread 0
+In main: creating thread 1
+In main: creating thread 2
+In main: creating thread 3
+In main: creating thread 4
+In main: creating thread 5
+In main: creating thread 6
+In main: creating thread 7
+In main: creating thread 8
+In main: creating thread 9
+In main: creating thread 10
+In main: creating thread 11
+In main: creating thread 12
+In main: creating thread 13
+In main: creating thread 14
+Main: completed join with thread 0 having a status of 0
+Main: completed join with thread 1 having a status of 0
+Main: completed join with thread 2 having a status of 0
+Main: completed join with thread 3 having a status of 0
+Main: completed join with thread 4 having a status of 0
+Main: completed join with thread 5 having a status of 0
+Main: completed join with thread 6 having a status of 0
+Main: completed join with thread 7 having a status of 0
+Main: completed join with thread 8 having a status of 0
+Main: completed join with thread 9 having a status of 0
+Main: completed join with thread 10 having a status of 0
+Main: completed join with thread 11 having a status of 0
+Main: completed join with thread 12 having a status of 0
+Main: completed join with thread 13 having a status of 0
+Main: completed join with thread 14 having a status of 0
