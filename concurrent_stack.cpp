@@ -1,9 +1,15 @@
+// Sample input: i4 i6 i7 d d p d p s s i1
+/* Here: 
+	i means insert (push)
+	d means delete (pop)
+	s means search (peek)
+	p means print (display the stack from top to bottom)
+*/ 
 #include<iostream>
 #include<stdio.h>
 #include<vector>
 #include<pthread.h>
-#include<fstream>
-#define Max_Threads 15 // Change this to change the number of threads being used (keep it a multiple of 3)
+//#include<fstream>
 
 pthread_mutex_t stackmutex; // For atomic pushing and poping
  
@@ -65,6 +71,7 @@ class STACK{
 
 typedef struct thread_data{ // For the thread arguments
 	int id; // Thread id given to the thread during its creation
+	int value; // If the thread has to push some value to the stack
 	STACK *stack; // A pointer to the stack object
 }thread_data;
 
@@ -74,9 +81,10 @@ void *insert(void *thread_arg){
 	thread_data *mydata = (thread_data*)thread_arg;
 	
 	pthread_mutex_lock (&stackmutex);
-	(*(mydata->stack)).insert(mydata->id);
-	//cout << "Thread " << mydata->id << " Pushed " << mydata->id << " onto the stack\n"; 
-	printf("Thread %d inseted (pushed) %d onto the stack\n", mydata->id, mydata->id);
+	
+	(*(mydata->stack)).insert(mydata->value);
+	printf("Thread %d inserted (pushed) %d onto the stack\n", mydata->id, mydata->value);
+
 	pthread_mutex_unlock (&stackmutex);
 	
 	pthread_exit(NULL);
@@ -87,11 +95,25 @@ void *search(void *thread_arg){
 	
 	pthread_mutex_lock (&stackmutex);
 	int topmost_element = (*(mydata->stack)).search();
-	//cout << "Thread " << mydata->id << " Pushed " << mydata->id << " onto the stack\n"; 
+	
 	if (topmost_element != -1)
 		printf("Thread %d found that the topmost element in the stack is %d\n", mydata->id, topmost_element);
 	else
 		printf("Thread %d found the stack to be empty\n", mydata->id);
+	
+	pthread_mutex_unlock (&stackmutex);
+	
+	pthread_exit(NULL);
+}
+
+void *print(void *thread_arg){
+	thread_data *mydata = (thread_data*)thread_arg;
+	
+	pthread_mutex_lock (&stackmutex);
+	
+	printf("Thread %d is trying to print the stack: ", mydata->id);
+	(*(mydata->stack)).print();
+	
 	pthread_mutex_unlock (&stackmutex);
 	
 	pthread_exit(NULL);
@@ -104,10 +126,8 @@ void *del(void *thread_arg){
 	int deleted_data = (*(mydata->stack)).del(); // Poped data
 	
 	if(deleted_data != -1) 
-		//cout << "Thread " << mydata->id << " Popped " << popped_data << " from the stack\n";
 		printf("Thread %d deleted (poped) %d from the stack\n", mydata->id, deleted_data);
 	else
-		//cout << "Thread " << mydata->id << " cannot del from empty stack\n";
 		printf("Thread %d cannot delete (pop) from empty stack\n", mydata->id);
 	
 	pthread_mutex_unlock (&stackmutex);
@@ -115,23 +135,62 @@ void *del(void *thread_arg){
 }
  
 // Learnt that cout sends data as streams and mixing of data may occur while printing, hence I have used printf instead of cout
- 
-int main(){
-	if(Max_Threads % 3){
-		printf("The number of threads is not a mltiple of 3.\nPlease give it a value that is a multiple of 3\n");
-		exit(-1);
-	}	
+int main(int argc, char **argv){	
+	#define Max_Threads argc-1 // The number of arguments is the number of threads		
 	
-	ofstream output; 
-/* This file maintains the thread creation record. It will hold any errors that occur while the threads are created as well.
- I have put those into a separate file instead of printing it onto the terminal as I did'nt want it to interfere with the thread outputs */
-	output.open("Thread_creations.txt");
-
 	STACK stack; // Creates the stack object
 	void *status; // For the exit status of threads
 	pthread_mutex_init(&stackmutex, NULL); // Initializing the mutex
 	pthread_t threads[Max_Threads]; // Creates an array of threads 
 	thread_data data[Max_Threads]; // Holds arguments for the threads 
+	
+	char first; // To check the first character of each argument
+	int value; // To hold the value in case of a push argument
+	
+	printf("The given input is:\n");
+	for (unsigned int i = 1; i<argc; i++){
+		data[i-1].id = i;
+		data[i-1].stack = &stack;
+		
+		printf("Thread %u: ", i);
+		
+		first = argv[i][0];
+		
+		switch(first){
+			case 'i':{ // Insertion
+				value = atoi(argv[i]+1);
+				printf(" Insert (Push) %d\n", value);
+				data[i-1].value = value;
+				break;
+			}
+			
+			case 'd':{ // Deletion
+				printf(" Delete (pop)\n");
+				break;
+			}
+			
+			case 's':{ // Search
+				printf(" Search (peek)\n");
+				break;
+			}
+			
+			case 'p':{ // Print
+				printf(" Print (Display the stack from top to bottom)\n");
+				break;
+			}		
+			
+			default:{
+				printf(" Invalid operation %s\nProgram will terminate\n", argv[i]);
+				exit(-1);
+			}	 
+		}	
+	}	
+	printf("\n\n");
+	
+	//ofstream output; 
+/* This file maintains the thread creation record. It will hold any errors that occur while the threads are created as well.
+ I have put those into a separate file instead of printing it onto the terminal as I did'nt want it to interfere with the thread outputs */
+	//output.open("Thread_creations.txt");
 	
 	// Creating the threads
 	pthread_attr_t attr; 
@@ -140,39 +199,43 @@ int main(){
 	// Needed to make the threads created to be joinable as implementations don't do it by default)
 	
 	int err; // Holds return value of the pthread_create function	
-	for(unsigned int i = 0; i < Max_Threads - 1; i += 3){
-		// Setting the arguments
-		data[i].id = i; 
-		data[i+1].id = i + 1;
-		data[i+2].id = i + 2; 
+	for(unsigned int i = 0; i < Max_Threads; i++){			
+		//output << "In main: creating thread " << i << '\n';
 		
-		data[i].stack = &stack;
-		data[i+1].stack = &stack;
-		data[i+2].stack = &stack;
-		
-		output << "In main: creating thread " << i << '\n';
-		//printf("In main: creating thread %d\n", i);
-		err = pthread_create(&threads[i], &attr, insert, (void *) &data[i]);
-		if (err){ // Creation of thread failed
-			cout << "ERROR!! Return code from pthread_create() is " << err << '\n';
-			exit(-1);
-		}
-		
-		output << "In main: creating thread " << i+1 << '\n';
 		//printf("In main: creating thread %d\n", i+1);
-		err = pthread_create(&threads[i+1], &attr, del, (void *) &data[i+1]);
+		
+		switch(argv[i+1][0]){
+			case 'i':{
+				err = pthread_create(&threads[i], &attr, insert, (void *) &data[i]);
+				break;
+			}
+			
+			case 'd':{
+				err = pthread_create(&threads[i], &attr, del, (void *) &data[i]);
+				break;
+			}
+			
+			case 's':{
+				err = pthread_create(&threads[i], &attr, search, (void *) &data[i]);
+				break;
+			}
+			
+			case 'p':{
+				err = pthread_create(&threads[i], &attr, print, (void *) &data[i]);
+				break;
+			}		
+			
+			default:{
+				printf("Invalid operation %s\nProgram will terminate\n", argv[i]);
+				exit(-1);
+			}
+		}
+		
 		if (err){ // Creation of thread failed
 			cout << "ERROR!! Return code from pthread_create() is " << err << '\n';
 			exit(-1);
 		}
 		
-		output << "In main: creating thread " << i+2 << '\n';
-		//printf("In main: creating thread %d\n", i+2);
-		err = pthread_create(&threads[i+2], &attr, search, (void *) &data[i+2]);
-		if (err){ // Creation of thread failed
-			cout << "ERROR!! Return code from pthread_create() is " << err << '\n';
-			exit(-1);
-		}
 	}
 	
 	pthread_attr_destroy(&attr);
@@ -184,7 +247,8 @@ int main(){
 			printf("ERROR; return code from pthread_join() is %u\n", err);
 			exit(-1);
 		}
-		output << "Main: completed join with thread " << i << " having a status of " << status << '\n';
+		//output << "Main: completed join with thread " << i << " having a status of " << status << '\n';
+		
 		//printf("Main: completed join with thread %u having a status of %ld\n",i,(long)status);
 		// This shows the joining of the main thread with the created threads	
 	}
