@@ -19,7 +19,7 @@ I have made use of mutexes for synchronization and hence only one thread can acc
 # Files:
 * stack_using_vectors.cpp : It is the main file which has the implementation.
 * Thread_logs.txt : This file will get updated with the logs of creation and joining of threads when the main program is run. (Disabled by default. Please uncomment the required lines to enable logging)
-* input.txt : This file contains a sample input to the program which can be redirected as command line arguments as discussed below.
+* input.txt : This file contains a sample input (including all four operations) to the program which can be redirected as command line arguments as discussed below.
 * t1.txt : This is an input file containing the edge case when all the threads are trying to **delete (pop)** from an **empty stack**.
 * t2.txt : This is an input file containing the edge case when all the threads are trying to **search (seek)** an **empty stack**.
 * t3.txt : This is an input file containing the edge case when all the threads are trying to **print** an **empty stack**.
