@@ -25,10 +25,10 @@ I have made use of mutexes for synchronization and hence only one thread can acc
 Type **g++ concurrent_stack.cpp -pthread** in the terminal to compile the program to give an executable named **a.out**.
 
 This program takes command line arguments which is of the following format:
-* i followed by the insertion value (without space) for insert (push).
-* d means delete (pop)
-* s means search (peek)
-* p means print (display the stack from top to bottom)
+* **i** followed by the insertion value (without space) for insert (push).
+* **d** for delete (pop)
+* **s** for search (peek)
+* **p** for print (display the stack from top to bottom)
 
 Sample input for LINUX: **./a.out i4 i6 i7 s d d d s p i89 d s p**
 
