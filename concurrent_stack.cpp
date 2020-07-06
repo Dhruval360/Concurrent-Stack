@@ -122,7 +122,7 @@ void *print(void *thread_arg){
 	
 	pthread_mutex_lock(&stackmutex);
 	
-	printf("Thread %d is trying to print the stack: ", mydata->id);
+	printf("Thread %d is trying to print the stack:---------------------------------------------", mydata->id);
 	(*(mydata->stack)).print();
 	
 	pthread_mutex_unlock(&stackmutex);	
@@ -145,7 +145,7 @@ void *del(void *thread_arg){
 }
  
 int main(int argc, char **argv){			
-	printf("The number threads is: %d\n\n", Max_Threads);
+	printf("The number of threads is: %d\n\n", Max_Threads);
 	
 	STACK stack; // Creates the stack object
 	void *status; // For the exit status of threads
